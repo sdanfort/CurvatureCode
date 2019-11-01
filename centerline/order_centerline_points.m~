@@ -24,7 +24,7 @@ EP = bwmorph( S, 'endpoints' );
 
 %UPDATE this code if the robot is in a different configuration!
 %For example, if the head of the robot is located at the top of the poster
-%board, you would be looking for the smallest y-coordinate, not x.
+%board, you would be looking for the smallest 
 [ ~, minXEidx ] = min( xE );
 
 xy = [x, y];
