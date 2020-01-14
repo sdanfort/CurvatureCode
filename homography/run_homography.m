@@ -18,7 +18,7 @@ im3 = imread('undistort2 0049.tif');
 
 % whatever general path the images will be in
 %UPDATE this path!!!! IDK what the folder name will be
-inpath = '/Users/roahm/Box Sync/2019 Soft Robot Tests';
+inpath = '/Users/roahm/Box Sync/FREEWearProject';
 
 %I don't know what subfolders will be below the general folder. But let's
 %assume we want to loop through all of them.

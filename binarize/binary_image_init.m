@@ -1,4 +1,4 @@
-%get_binary_image
+%binary_image_init
 
 %Loop through a series of folders, then images in that folder, to make each
 %image binary and then save as a .mat file.
@@ -9,7 +9,7 @@ pixel_group = 2000;
 
 % whatever general path the images will be in
 %UPDATE!!
-inpath = '/Users/roahm/Box Sync/2019 ICRA snake robot videos';
+inpath = '/Users/roahm/Box Sync/FREEWearProject';
 
 % How many subfolders in this general path to loop through?
 d = dir( inpath );

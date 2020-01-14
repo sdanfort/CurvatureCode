@@ -9,7 +9,7 @@ clear; close all;
 thresh = 50;
 
 % whatever general path the images will be in
-inpath = '/Users/roahm/Box Sync/2019 ICRA snake robot videos';
+inpath = '/Users/roahm/Box Sync/FREEWearProject';
 
 % How many subfolders in this general path to loop through?
 d = dir( inpath );
