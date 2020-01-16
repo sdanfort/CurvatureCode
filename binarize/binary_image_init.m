@@ -7,78 +7,51 @@ clear; close all;
 
 pixel_group = 2000;
 
+%UPDATE this variable if you are running a different test!
+testName = 'A-StorageTime';
+
 % whatever general path the images will be in
-%UPDATE!!
-inpath = '/Users/roahm/Box Sync/FREEWearProject';
+inpath = sprintf( '/Users/roahm/Box Sync/FREEWearProject/%s', testName );
 
-% How many subfolders in this general path to loop through?
-d = dir( inpath );
-isub = [d(:).isdir]; %# returns logical vector
-subFolderList = {d(isub).name}';
-subFolderList(ismember(subFolderList,{'.','..'})) = [];
-
-for j = 1:length(subFolderList)  
-    
-    testName = subFolderList{j};
-
-    % How many folders to loop through?
-    d = dir( sprintf( '%s/%s', inpath, testName ) );
-    isub = [d(:).isdir]; %# returns logical vector
-    nameFolds = {d(isub).name}';
-    nameFolds(ismember(nameFolds,{'.','..'})) = [];
-
-    for k = 1:length( nameFolds )
-        
-        imFolder = nameFolds{k};
-        
-        %change this if you are naming the rectified image folder something
-        %else
-        if contains( imFolder, 'rectified' )
             
-            % get the list of image files in this folder 
-            img_files = dir( sprintf( '%s/%s/%s/*.tif',...
-                inpath, testName, imFolder ) );
-    
-            for i = 1:length( img_files )
+% get the list of image files in this folder 
+img_files = dir( sprintf( '%s/HomographyFrames/*.tif',...
+    inpath ) );
 
-                fileName = img_files(i).name;
+for i = 1:length( img_files )
 
-                im = imread( sprintf( '%s/%s/%s/%s',...
-                    inpath, testName, imFolder, fileName ) );
+    fileName = img_files(i).name;
 
-                %make grayscale    
-                im = rgb2gray(im);
-                im = imadjust( im );
-                im = imgaussfilt(im);
-        
-                %make binary
-                im = imbinarize( im, 'global' );
+    im = imread( sprintf( '%s/HomographyFrames/%s',...
+        inpath, fileName ) );
 
-                %get rid of groups of pixels that are smaller
-                %than threshold. Can tune if need be.
-                im = bwareaopen( im, pixel_group, 4 );
-        
-                %make border black too
-                CC = bwconncomp(im);
-                numPixels = cellfun(@numel,CC.PixelIdxList);
-                [biggest, idx] = max(numPixels);
-                im(CC.PixelIdxList{idx}) = 0;
-                
-        
-                % save as a .mat file (update filename):
-                if ~exist( sprintf('%s/%s/binary', inpath, testName ), 'dir' )
+    %make grayscale    
+    im = rgb2gray(im);
+    im = imadjust( im );
+    im = imgaussfilt(im);
 
-                    mkdir( sprintf('%s/%s/binary', inpath, testName ) );
+    %make binary
+    im = imbinarize( im, 'global' );
 
-                end
-                
-                save( sprintf( '%s/%s/binary/%s.mat', inpath, testName,...
-                    fileName(1:end-4) ), 'im' );
-                
-            end
-            
-        end
-        
+    %get rid of groups of pixels that are smaller
+    %than threshold. Can tune if need be.
+    im = bwareaopen( im, pixel_group, 4 );
+
+    %make border black too
+    CC = bwconncomp(im);
+    numPixels = cellfun(@numel,CC.PixelIdxList);
+    [biggest, idx] = max(numPixels);
+    im(CC.PixelIdxList{idx}) = 0;
+
+
+    % save as a .mat file (update filename):
+    if ~exist( sprintf('%s/BinaryImage', inpath ), 'dir' )
+
+        mkdir( sprintf('%s/BinaryImage', inpath ) );
+
     end
-    
+
+    save( sprintf( '%s/BinaryImage/%s.mat', inpath,...
+        fileName(1:end-4) ), 'im' );
+
 end

@@ -14,8 +14,11 @@
 
 clearvars; close all;
 
+%UPDATE this variable if you are running a different test!
+testName = 'A-StorageTime';
+
 % whatever general path the images will be in
-inpath = '/Users/roahm/Box Sync/2019 ICRA snake robot videos';
+inpath = sprintf( '/Users/roahm/Box Sync/FREEWearProject/%s', testName );
 
 %I suggest plotting the mean + standard deviation, but there is also an
 %option to plot the total range of values if you set this to 0:
@@ -24,53 +27,32 @@ use_stdev = 1;
 %can change RGB color!
 robotColor = [217,95,2]/255;
 
-%which test do you want to average?
-testName = 'test_folder_here';
 
-% How many folders in this test to loop through?
-d = dir( sprintf( '%s/%s', inpath, testName ) );
-isub = [d(:).isdir]; %# returns logical vector
-nameFolds = {d(isub).name}';
-nameFolds(ismember(nameFolds,{'.','..'})) = [];
+%find the list of .mat files
+snake_files = dir( sprintf( '%s/CurvatureStructs/*.mat', inpath );
 
-robotCurveCon = [];
+for i = 1:length(snake_files)
 
-for k = 1:length( nameFolds )
+    fileName = snake_files(i).name;
 
-    imFolder = nameFolds{k};
+    %load the data struct
+    data = load( sprintf( '%s/CurvatureStructs/%s',...
+        inpath, fileName ) );
+    data = data.data;
 
-    if contains( imFolder, 'Struct' )
+    %Get radius of curavture magnitudes
+    R = data.R;
 
-        %find the list of .mat files
-        snake_files = dir( sprintf( '%s/%s/%s/*.mat', inpath,...
-            testName, imFolder ) );
+    curveLength = linspace( 0, 100, length(R) );
 
-        for i = 1:length(snake_files)
+    K = 1./R;           %so the curvature is in 1/(% snake length) 
 
-            fileName = snake_files(i).name;
+    %spline and resample so we have things as a function of curve length.
+    K = spline( percent_length(11:490), K(11:490) ); 
+    K = ppval( K, curveLength(11:490) )';
+    K = [NaN(10, 1); K; NaN(10, 1)];
 
-            %load the data struct
-            data = load( sprintf( '%s/%s/%s/%s',...
-                inpath, testName, imFolder, fileName ) );
-            data = data.data;
-
-            %Get radius of curavture magnitudes
-            R = data.R;
-
-            curveLength = linspace( 0, 100, length(R) );
-
-            K = 1./R;           %so the curvature is in 1/(% snake length) 
-
-            %spline and resample so we have things as a function of curve length.
-            K = spline( percent_length(11:490), K(11:490) ); 
-            K = ppval( K, curveLength(11:490) )';
-            K = [NaN(10, 1); K; NaN(10, 1)];
-
-            robotCurveCon = [ robotCurveCon, K ];
-
-        end
-
-    end
+    robotCurveCon = [ robotCurveCon, K ];
 
 end
 
@@ -122,10 +104,10 @@ ylabel( '$\mathcal{K}$ (Body Length$^{-1}$)', 'FontSize', 16 );
 
 if use_stdev
     
-    saveas( gcf, sprintf( '%s/Figures/curvatureScatterPlot_StDev.pdf', inpath, imFolder ) );
+    saveas( gcf, sprintf( '%s/CurvatureScatterPlot_StDev.pdf', inpath ) );
 
 else
     
-    saveas( gcf, sprintf( '%s/%s/curvatureScatterPlot_totalRange', inpath, imFolder ) );
+    saveas( gcf, sprintf( '%s/CurvatureScatterPlot_totalRange', inpath ) );
     
 end
