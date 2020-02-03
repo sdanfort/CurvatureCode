@@ -39,8 +39,8 @@ rect = cropPts.rect;
 %% loop through image files
 
 % get the list of image files in this folder 
-%(they were saved as .tif but could be different)
-img_files = dir( sprintf( '%s/PeakPressureFrames/*.tif',...
+%And we're looking for .jpg files for this project!
+img_files = dir( sprintf( '%s/PeakPressureFrames/*.jpg',...
     inpath ) );
 
 for i = 1:length(img_files)
@@ -52,8 +52,7 @@ for i = 1:length(img_files)
     im1 = imread( sprintf( '%s/PeakPressureFrames/%s',...
         inpath, fileName ) ); 
 
-    %will have to do some fun tiff processing
-    %again.... may change if the images aren't .tif
+    %in case image is not grayscale
     if size(im1, 3) > 1
 
     im1 = im1( :, :, 1:3 );
@@ -76,7 +75,7 @@ for i = 1:length(img_files)
     %resize again.....
     im1 = imresize( im1, size(im2) );
 
-    %save as tiff (again, name of folder could be changed from 'rectified')
+    %save as .jpg
     if ~exist( sprintf('%s/HomographyFrames', inpath ), 'dir' )
 
         mkdir( sprintf('%s/HomographyFrames', inpath ) );

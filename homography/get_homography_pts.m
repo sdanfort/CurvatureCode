@@ -38,12 +38,10 @@ inpath = sprintf( '/Users/roahm/Box Sync/FREEWearProject/%s', testName );
 
 
 %Within the test (testName) folder, we want to go into the one that 
-%is called "PeakPressureFrames".
+%is called "PeakPressureFrames". 
+%And we're looking for .jpg files for this project!
 
-%Will have to update the extension (currently .tif) based on what extension
-%these images have.
-
-img_files = dir( sprintf( '%s/PeakPressureFrames/*.tif',...
+img_files = dir( sprintf( '%s/PeakPressureFrames/*.jpg',...
     inpath ) );
 
 % filename of first file in the folder.
@@ -52,8 +50,7 @@ fileName = img_files(1).name;
 im1 = imread( sprintf( '%s/PeakPressureFrames/%s',...
     inpath, fileName ) ); 
 
-%will have to do some fun tiff processing
-%again.... may change if the images aren't .tif
+%in case image is not grayscale
 if size(im1, 3) > 1
 
     im1 = im1( :, :, 1:3 );
@@ -157,6 +154,6 @@ tform = fitgeotrans( moving_points, fixed_points, 'projective' );
 
 im1_new = imwarp( im1, tform, 'OutputView', imref2d( size(im2) ) );
 
-%plot just to make sure it's okay (will close on the next loop)
+%plot just to make sure it's okay
 figure;
 imshow( im1_new )
